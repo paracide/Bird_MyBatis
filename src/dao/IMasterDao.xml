@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="dao.IMasterDao">
+    <!-- 一对多 -->
+    <resultMap id="masters" type="entity.Master">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <collection property="pets" ofType="entity.Pet" column="master_id">
+            <result property="petid" column="pet_id"/>
+            <result property="petname" column="pet_name"/>
+        </collection>
+    </resultMap>
+
+    <select id="getAll" resultMap="masters">
+        SELECT
+            m.*,
+            p.*
+        FROM MASTER m, PET p
+        WHERE m.ID = p.MASTER_ID AND m.ID = #{id}
+    </select>
+
+    <!-- 多对一 -->
+    <resultMap id="pets" type="entity.Pet">
+        <id property="petid" column="pet_id"/>
+        <result property="petname" column="pet_name"/>
+
+        <association property="master" javaType="entity.Master">
+            <id property="id" column="id"/>
+            <result property="name" column="name"/>
+        </association>
+    </resultMap>
+    <select id="getMaster" resultMap="pets">
+        SELECT
+            m.*,
+            p.*
+        FROM MASTER m, PET p
+        WHERE p.MASTER_ID = m.ID AND p.PET_ID = #{petid}
+    </select>
+
+</mapper>

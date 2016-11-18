@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="dao.IAnimalDao">
+
+    <resultMap id="animalMap" type="entity.Animal">
+        <id column="myId" property="id"/>
+        <result column="myName" property="name"/>
+    </resultMap>
+
+
+    <insert id="save">
+        INSERT INTO ANIMAL VALUES (SQ_ANIMAL.nextval, #{name})
+    </insert>
+
+    <delete id="delete">
+     <![CDATA[
+        DELETE FROM ANIMAL
+        WHERE NAME = #{name}
+        ]]>
+    </delete>
+
+    <!--resultTypew:返回的List的泛型类型-->
+    <select id="getAll" resultMap="animalMap">
+        <![CDATA[
+        SELECT
+            id   myId,
+            name myName
+        FROM ANIMAL
+        ]]>
+    </select>
+
+    <select id="getOneById" resultType="Animal">
+        <![CDATA[
+        SELECT *
+        FROM ANIMAL
+        WHERE ID = #{id}
+        ]]>
+    </select>
+
+    <select id="getOneByMap" resultType="Animal">
+        <![CDATA[
+        SELECT *
+        FROM ANIMAL
+        WHERE ID = #{mykey}
+        ]]>
+    </select>
+
+    <select id="getAllByPage" resultType="Animal">
+        <![CDATA[
+        SELECT *
+        FROM (SELECT
+                  an.*,
+                  ROWNUM rn
+              FROM (SELECT *
+                    FROM ANIMAL
+                    ORDER BY ID) an)
+        WHERE rn BETWEEN (#{pageNo} - 1) * #{pageSize} + 1 AND #{pageNo} * #{pageSize}
+        ]]>
+    </select>
+
+    <select id="getCount" resultType="Animal">
+        <![CDATA[
+        SELECT count(1) id
+        FROM ANIMAL
+        ]]>
+    </select>
+
+    <select id="getAnimal" resultType="Animal">
+        SELECT * FROM ANIMAL WHERE 2=2
+        <if test="id!=null">
+            and ID =#{id}
+        </if>
+    </select>
+
+    <select id="getAnimal2" resultType="Animal">
+        SELECT * FROM ANIMAL
+        <trim prefix="where" prefixOverrides="and|or">
+            <if test="id!=null">
+                ID =#{id}
+            </if>
+
+            <if test="name!=null">
+                and NAME =#{name}
+            </if>
+        </trim>
+    </select>
+
+</mapper>
